@@ -14,6 +14,14 @@ The `vanilla` setup is a [very basic NL2SQL agent](vanilla_agent_spec.json). It 
 `get_schema_overview`, `get_table_schemas`, and `run_sql` tools:
 no AV skill and no AV-specialized tools.
 
+The checked-in Agent Spec artifacts used for the published runs are versioned as
+follows:
+
+| Agent Spec artifact | Component plugin version | Agent Spec version |
+| ------------------- | ------------------------ | ------------------ |
+| [`analytic_view_agent_spec.json`](analytic_view_agent_spec.json) | `26.1.2` | `25.4.1` |
+| [`vanilla_agent_spec.json`](vanilla_agent_spec.json) | `26.1.2` | `25.4.1` |
+
 Model names ending in `-medium` or `-low` refer to the reasoning level used for
 that run. For example, `ocigenai.gpt-5.5-medium` is the model configured with
 medium reasoning, while `ocigenai.gpt-5.5-low` is the same model family
@@ -37,8 +45,12 @@ judgment.
 
 `# Correct` is the number of correctly answered questions out of 100. All other result columns are averages per question. 
 The exported Agent Spec agents were kept as simple as possible, so their token counts and tool-call totals may differ from the results reported below.
-These results were collected with a benchmark runtime (a) included an agent thought tool counted in the tool calls and (b) exposed additional run sql parameters, 
-such as a query explanation parameter. These differences affect the reported token usage and tool-call totals.
+These results were collected with two benchmark runtime setups:
+
+- The first setup included an agent thought tool, counted its calls in the total tool-call count, and exposed additional run sql parameters such as a query-explanation parameter.
+- The second setup did not include an agent thought tool and did not expose the additional run sql parameters.
+
+## Analytic views with agent thought tool and with additional run sql parameters
 
 | Model                        | Setup                         | # Correct | Exec Time (s) | Input Tokens | Output Tokens | Tool Calls | Run SQL tool calls | SQL Errors | SQL Error % |
 | ---------------------------- | ----------------------------- | --------: | ------------: | -----------: | ------------: | ---------: | --------: | ---------: | ----------: |
@@ -61,7 +73,7 @@ such as a query explanation parameter. These differences affect the reported tok
 | `ocigenai.command-a-03-2025` | vanilla                       |       0.0 |       125.033 |        25612 |          1244 |        5.9 |       4.8 |       0.42 |        11.6 |
 | `ocigenai.command-a-03-2025` | AV skill and tools            |       2.0 |       133.730 |        25723 |          1117 |        4.5 |       3.3 |       0.22 |         5.5 |
 
-## Vanilla
+### Vanilla
 
 | Model                        | # Correct | Exec Time (s) | Input Tokens | Output Tokens | Tool Calls | Run SQL tool calls | SQL Errors | SQL Error % |
 | ---------------------------- | --------: | ------------: | -----------: | ------------: | ---------: | --------: | ---------: | ----------: |
@@ -75,7 +87,7 @@ such as a query explanation parameter. These differences affect the reported tok
 | `ocigenai.gemini-2.5-pro`    |       1.0 |        87.648 |        11660 |           885 |        4.8 |       2.2 |       1.25 |        45.0 |
 | `ocigenai.command-a-03-2025` |       0.0 |       125.033 |        25612 |          1244 |        5.9 |       4.8 |       0.42 |        11.6 |
 
-## AV skill and tools
+### AV skill and tools
 
 | Model                        | # Correct | Exec Time (s) | Input Tokens | Output Tokens | Tool Calls | Run SQL tool calls | SQL Errors | SQL Error % |
 | ---------------------------- | --------: | ------------: | -----------: | ------------: | ---------: | --------: | ---------: | ----------: |
@@ -88,3 +100,46 @@ such as a query explanation parameter. These differences affect the reported tok
 | `ocigenai.gpt-oss-120b`      |      14.0 |        47.626 |        40929 |          1009 |        4.6 |       2.5 |       0.50 |         8.2 |
 | `ocigenai.gemini-2.5-pro`    |      46.0 |        48.883 |        19820 |          1026 |        3.4 |       1.2 |       0.47 |        25.4 |
 | `ocigenai.command-a-03-2025` |       2.0 |       133.730 |        25723 |          1117 |        4.5 |       3.3 |       0.22 |         5.5 |
+
+## Analytic views without agent thought and without additional run sql parameters
+
+| Model                        | Setup                         | # Correct | Exec Time (s) | Input Tokens | Output Tokens | Tool Calls | Run SQL tool calls | SQL Errors | SQL Error % |
+| ---------------------------- | ----------------------------- | --------: | ------------: | -----------: | ------------: | ---------: | -----------------: | ---------: | -----------: |
+| `ocigenai.gpt-5.5-medium`    | AV skill and tools            |      84.0 |       117.012063 |        33334 |          1943 |        7.6 |               1.8 |       0.01 |         0.3 |
+| `ocigenai.gpt-5.5-medium`    | vanilla                       |      48.0 |        57.273826 |        14124 |          2128 |        8.4 |               4.0 |       0.01 |         0.3 |
+| `ocigenai.gpt-5.5-low`       | AV skill and tools            |      82.0 |       101.439097 |        26498 |          1318 |        6.5 |               1.4 |       0.09 |         1.3 |
+| `ocigenai.gpt-5.5-low`       | vanilla                       |      48.0 |        77.376164 |         9104 |          1339 |        6.3 |               2.5 |       0.03 |         1.0 |
+| `ocigenai.gpt-5.4-mini-medium` | AV skill and tools          |      64.0 |        82.797925 |        45567 |          3188 |       10.6 |               2.5 |       0.36 |        11.4 |
+| `ocigenai.gpt-5.4-mini-medium` | vanilla                     |      39.0 |        48.150953 |        17790 |          2503 |        8.7 |               3.6 |       0.03 |         0.6 |
+| `ocigenai.gpt-5.4-nano-medium` | AV skill and tools         |      31.0 |       261.096978 |       141521 |          7442 |       20.9 |               7.8 |       2.74 |        31.4 |
+| `ocigenai.gpt-5.4-nano-medium` | vanilla                    |      14.0 |        83.160137 |        47195 |          3985 |       13.8 |               6.3 |       0.53 |         4.9 |
+| `ocigenai.gpt-oss-120b`      | AV skill and tools            |       5.0 |        50.104383 |        42190 |          1086 |        6.7 |               3.5 |       0.82 |        11.6 |
+| `ocigenai.gpt-oss-120b`      | vanilla                       |       7.0 |        22.814289 |        13378 |           870 |        6.2 |               4.2 |       0.21 |         1.9 |
+| `ocigenai.command-a-03-2025` | AV skill and tools            |       0.0 |        90.215933 |        20266 |           801 |        4.0 |               1.9 |       0.18 |         5.3 |
+| `ocigenai.command-a-03-2025` | vanilla                       |       9.0 |       101.560786 |        13561 |          1083 |        6.1 |               3.9 |       0.06 |         1.6 |
+| `ocigenai.gemini-2.5-pro`    | AV skill and tools            |       0.0 |         0.000000 |            0 |             0 |        0.0 |               0.0 |       0.00 |         0.0 |
+| `ocigenai.gemini-2.5-pro`    | vanilla                       |       0.0 |         0.000000 |            0 |             0 |        0.0 |               0.0 |       0.00 |         0.0 |
+
+### Vanilla
+
+| Model                        | # Correct | Exec Time (s) | Input Tokens | Output Tokens | Tool Calls | Run SQL tool calls | SQL Errors | SQL Error % |
+| ---------------------------- | --------: | ------------: | -----------: | ------------: | ---------: | -----------------: | ---------: | -----------: |
+| `ocigenai.gpt-5.5-medium`    |      48.0 |        57.273826 |        14124 |          2128 |        8.4 |               4.0 |       0.01 |         0.3 |
+| `ocigenai.gpt-5.5-low`       |      48.0 |        77.376164 |         9104 |          1339 |        6.3 |               2.5 |       0.03 |         1.0 |
+| `ocigenai.gpt-5.4-mini-medium` |      39.0 |        48.150953 |        17790 |          2503 |        8.7 |               3.6 |       0.03 |         0.6 |
+| `ocigenai.gpt-5.4-nano-medium` |      14.0 |        83.160137 |        47195 |          3985 |       13.8 |               6.3 |       0.53 |         4.9 |
+| `ocigenai.gpt-oss-120b`      |       7.0 |        22.814289 |        13378 |           870 |        6.2 |               4.2 |       0.21 |         1.9 |
+| `ocigenai.command-a-03-2025` |       9.0 |       101.560786 |        13561 |          1083 |        6.1 |               3.9 |       0.06 |         1.6 |
+| `ocigenai.gemini-2.5-pro`    |       0.0 |         0.000000 |            0 |             0 |        0.0 |               0.0 |       0.00 |         0.0 |
+
+### AV skill and tools
+
+| Model                        | # Correct | Exec Time (s) | Input Tokens | Output Tokens | Tool Calls | Run SQL tool calls | SQL Errors | SQL Error % |
+| ---------------------------- | --------: | ------------: | ----------- | ------------: | ---------: | -----------------: | ---------: | -----------: |
+| `ocigenai.gpt-5.5-medium`    |      84.0 |       117.012063 |        33334 |          1943 |        7.6 |               1.8 |       0.01 |         0.3 |
+| `ocigenai.gpt-5.5-low`       |      82.0 |       101.439097 |        26498 |          1318 |        6.5 |               1.4 |       0.09 |         1.3 |
+| `ocigenai.gpt-5.4-mini-medium` |      64.0 |        82.797925 |        45567 |          3188 |        6.7 |               2.5 |       0.36 |        11.4 |
+| `ocigenai.gpt-5.4-nano-medium` |      31.0 |       261.096978 |       141521 |          7442 |       20.9 |               7.8 |       2.74 |        31.4 |
+| `ocigenai.gpt-oss-120b`      |       5.0 |        50.104383 |        42190 |          1086 |        6.7 |               3.5 |       0.82 |        11.6 |
+| `ocigenai.command-a-03-2025` |       0.0 |        90.215933 |        20266 |           801 |        4.0 |               1.9 |       0.18 |         5.3 |
+| `ocigenai.gemini-2.5-pro`    |       0.0 |         0.000000 |            0 |             0 |        0.0 |               0.0 |       0.00 |         0.0 |
