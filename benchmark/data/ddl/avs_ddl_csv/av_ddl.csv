@@ -573,7 +573,7 @@
         AGGREGATE BY SUM
         CLASSIFICATION ""CAPTION"" VALUE 'Dollars',
       ""CPI_ADJUSTED_DOLLARS"" AS (
-        dollars * ((QUALIFY(cpi, year = HIER_LAST(HIER_LEVEL_MEMBERS(CURRENT MEMBER WITHIN LEVEL)))) / cpi))
+        CASE WHEN cpi = 0 OR QUALIFY(cpi, year = HIER_LAST(HIER_LEVEL_MEMBERS(CURRENT MEMBER WITHIN LEVEL))) = 0 THEN NULL ELSE dollars * ((QUALIFY(cpi, year = HIER_LAST(HIER_LEVEL_MEMBERS(CURRENT MEMBER WITHIN LEVEL)))) / cpi) END)
         CLASSIFICATION ""CAPTION"" VALUE 'Inflation Adjusted Dollars',
       ""DOLLARS_YA"" AS (
         LAG(dollars) OVER (HIERARCHY year OFFSET 1 WITHIN LEVEL))
@@ -585,7 +585,7 @@
         LAG_DIFF_PERCENT(dollars) OVER (HIERARCHY year OFFSET 1 WITHIN LEVEL))
         CLASSIFICATION ""CAPTION"" VALUE 'Dollars % Change Year Ago',
       ""FUNCTION_SHR_PARENT"" AS (
-        SHARE_OF(dollars HIERARCHY function PARENT))
+        CASE WHEN QUALIFY(dollars, function = HIER_PARENT(CURRENT MEMBER)) = 0 THEN NULL ELSE dollars / QUALIFY(dollars, function = HIER_PARENT(CURRENT MEMBER)) END)
         CLASSIFICATION ""CAPTION"" VALUE 'Function Percentage',
       ""FIN_PLAN_SHR_PARENT"" AS (
         SHARE_OF(dollars HIERARCHY financial_plan PARENT))
@@ -594,10 +594,10 @@
         SHARE_OF(dollars HIERARCHY fund PARENT))
         CLASSIFICATION ""CAPTION"" VALUE 'Fund Percentage',
       ""DOLLARS_INDEX_TO_FIRST_YEAR"" AS (
-        ROUND(dollars / (QUALIFY(dollars, year = HIER_FIRST(HIER_LEVEL_MEMBERS(CURRENT MEMBER WITHIN LEVEL)))),2))
+        CASE WHEN QUALIFY(dollars, year = HIER_FIRST(HIER_LEVEL_MEMBERS(CURRENT MEMBER WITHIN LEVEL))) = 0 THEN NULL ELSE ROUND(dollars / (QUALIFY(dollars, year = HIER_FIRST(HIER_LEVEL_MEMBERS(CURRENT MEMBER WITHIN LEVEL)))),2) END)
         CLASSIFICATION ""CAPTION"" VALUE 'Dollars Indexed to First Year',
       ""DOLLARS_INDEX_TO_FIRST_YEAR_CPI_ADJUSTED"" AS (
-        ROUND(cpi_adjusted_dollars / (QUALIFY(cpi_adjusted_dollars, year = HIER_FIRST(HIER_LEVEL_MEMBERS(CURRENT MEMBER WITHIN LEVEL)))),2))
+        CASE WHEN QUALIFY(cpi_adjusted_dollars, year = HIER_FIRST(HIER_LEVEL_MEMBERS(CURRENT MEMBER WITHIN LEVEL))) = 0 THEN NULL ELSE ROUND(cpi_adjusted_dollars / (QUALIFY(cpi_adjusted_dollars, year = HIER_FIRST(HIER_LEVEL_MEMBERS(CURRENT MEMBER WITHIN LEVEL)))),2) END)
         CLASSIFICATION ""CAPTION""
           VALUE 'Dollars Indexed to First Year - Inflation Adjusted')
     DEFAULT MEASURE ""CPI""
