@@ -783,14 +783,20 @@
         AGGREGATE BY AVG
         CLASSIFICATION ""CAPTION"" VALUE 'Avg Security Delay Minutes'
         CLASSIFICATION ""DESCRIPTION""
-          VALUE 'The average Security Delay in minutes.   Delays or cancellations caused by evacuation of a terminal or concourse, re-boarding of aircraft because of security breach, inoperative screening equipment and/or long lines in excess of 29 minutes at screening areas.'
+          VALUE 'The average Security Delay in minutes over non-NULL reported values, including numeric zeroes. Delays or cancellations caused by evacuation of a terminal or concourse, re-boarding of aircraft because of security breach, inoperative screening equipment and/or long lines in excess of 29 minutes at screening areas.'
         CLASSIFICATION ""UNITS"" VALUE 'Minutes',
-      ""SUM_SECURITY_DELAY_HOURS"" FACT (
-        ROUND((security_delay_minutes/ 60),0))
+      ""SUM_SECURITY_DELAY_MINUTES"" FACT (
+        security_delay_minutes)
         AGGREGATE BY SUM
         CLASSIFICATION ""CAPTION"" VALUE 'Total Security Delay Minutes'
         CLASSIFICATION ""DESCRIPTION""
-          VALUE 'The total (sum) Security Delays in hours.   Delays or cancellations caused by evacuation of a terminal or concourse, re-boarding of aircraft because of security breach, inoperative screening equipment and/or long lines in excess of 29 minutes at screening areas.'
+          VALUE 'The total security delay in minutes.'
+        CLASSIFICATION ""UNITS"" VALUE 'Minutes',
+      ""SUM_SECURITY_DELAY_HOURS"" AS (
+        ""SUM_SECURITY_DELAY_MINUTES"" / 60)
+        CLASSIFICATION ""CAPTION"" VALUE 'Total Security Delay Hours'
+        CLASSIFICATION ""DESCRIPTION""
+          VALUE 'The total security delay in hours without per-flight rounding.'
         CLASSIFICATION ""UNITS"" VALUE 'Hours',
       ""AVG_LATE_AIRCRAFT_DELAY_MINUTES"" FACT (
         late_aircraft_delay_minutes)
