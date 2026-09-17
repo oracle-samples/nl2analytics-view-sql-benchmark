@@ -903,8 +903,8 @@
         CLASSIFICATION ""DESCRIPTION"" VALUE 'Population share of state or total',
       ""POP_CHG_YA"" AS (
         LAG_DIFF(POPULATION) OVER (HIERARCHY year OFFSET 1))
-        CLASSIFICATION ""CAPTION"" VALUE 'Population Change Year Ago'
-        CLASSIFICATION ""DESCRIPTION"" VALUE 'Population Change Year Ago',
+        CLASSIFICATION ""CAPTION"" VALUE 'Population Change from Previous Available Year'
+        CLASSIFICATION ""DESCRIPTION"" VALUE 'Population change from the previous available year',
       ""POP_SHARE_AGE"" AS (
         SHARE_OF(population HIERARCHY age MEMBER ALL))
         CLASSIFICATION ""CAPTION"" VALUE 'Population Share of Age'
@@ -919,9 +919,9 @@
         CLASSIFICATION ""CAPTION"" VALUE 'Population'
         CLASSIFICATION ""DESCRIPTION"" VALUE 'Population',
       ""POP_PCT_CHG_YA"" AS (
-        LAG(POPULATION) OVER (HIERARCHY year OFFSET 1))
-        CLASSIFICATION ""CAPTION"" VALUE 'Population % Change Year Ago'
-        CLASSIFICATION ""DESCRIPTION"" VALUE 'Population Percent Change Year Ago')
+        100 * LAG_DIFF_PERCENT(POPULATION) OVER (HIERARCHY year OFFSET 1))
+        CLASSIFICATION ""CAPTION"" VALUE 'Population % Change from Previous Available Year'
+        CLASSIFICATION ""DESCRIPTION"" VALUE 'Population percent change from the previous available year')
     DEFAULT MEASURE ""POP_SHARE_SEX""
     DEFAULT AGGREGATE BY SUM
     CACHE USING ENFORCED CONSTRAINTS"
