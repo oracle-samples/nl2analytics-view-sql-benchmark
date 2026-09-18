@@ -2,6 +2,8 @@
 
 > These golden SQL row counts were generated using the [test subset DML dataset](../dml/test_subset/README.md), not the full dataset.
 
+> **Snapshot note:** The row counts below are the last completed results snapshot, generated at commit [`e469e57`](https://github.com/yassirsalmi/nl2analytics-view-sql-benchmark/commit/e469e57c4d0879c9752c83a629bc388bee7559e5). Some golden SQL queries and Analytic View definitions have changed since that commit, so these values should not be interpreted as row counts for the current query set or as partially updated results. Refreshed row counts are a work in progress.
+
 ## tasks_BKS_BROOKLYN_SALES_AV.jsonl
 
 Total golden SQL statements: 79

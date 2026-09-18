@@ -783,14 +783,20 @@
         AGGREGATE BY AVG
         CLASSIFICATION ""CAPTION"" VALUE 'Avg Security Delay Minutes'
         CLASSIFICATION ""DESCRIPTION""
-          VALUE 'The average Security Delay in minutes.   Delays or cancellations caused by evacuation of a terminal or concourse, re-boarding of aircraft because of security breach, inoperative screening equipment and/or long lines in excess of 29 minutes at screening areas.'
+          VALUE 'The average Security Delay in minutes over non-NULL reported values, including numeric zeroes. Delays or cancellations caused by evacuation of a terminal or concourse, re-boarding of aircraft because of security breach, inoperative screening equipment and/or long lines in excess of 29 minutes at screening areas.'
         CLASSIFICATION ""UNITS"" VALUE 'Minutes',
-      ""SUM_SECURITY_DELAY_HOURS"" FACT (
-        ROUND((security_delay_minutes/ 60),0))
+      ""SUM_SECURITY_DELAY_MINUTES"" FACT (
+        security_delay_minutes)
         AGGREGATE BY SUM
         CLASSIFICATION ""CAPTION"" VALUE 'Total Security Delay Minutes'
         CLASSIFICATION ""DESCRIPTION""
-          VALUE 'The total (sum) Security Delays in hours.   Delays or cancellations caused by evacuation of a terminal or concourse, re-boarding of aircraft because of security breach, inoperative screening equipment and/or long lines in excess of 29 minutes at screening areas.'
+          VALUE 'The total security delay in minutes.'
+        CLASSIFICATION ""UNITS"" VALUE 'Minutes',
+      ""SUM_SECURITY_DELAY_HOURS"" AS (
+        ""SUM_SECURITY_DELAY_MINUTES"" / 60)
+        CLASSIFICATION ""CAPTION"" VALUE 'Total Security Delay Hours'
+        CLASSIFICATION ""DESCRIPTION""
+          VALUE 'The total security delay in hours without per-flight rounding.'
         CLASSIFICATION ""UNITS"" VALUE 'Hours',
       ""AVG_LATE_AIRCRAFT_DELAY_MINUTES"" FACT (
         late_aircraft_delay_minutes)
@@ -877,8 +883,8 @@
           REFERENCES DISTINCT (""YEAR"") SPARSE MANY TO ONE RELATIONSHIP
         HIERARCHIES (""UDSA_YEAR"" AS ""YEAR"" DEFAULT),
       ""UDSA_COUNTIES_AD"" AS ""UDSA_COUNTIES_AD""
-        KEY (""COUNTY_FIPS"")
-          REFERENCES DISTINCT (""COUNTY_FIPS"") SPARSE MANY TO ONE RELATIONSHIP
+        KEY (""STATE_FIPS"", ""COUNTY_FIPS"")
+          REFERENCES DISTINCT (""STATE_FIPS"", ""COUNTY_FIPS"") SPARSE MANY TO ONE RELATIONSHIP
         HIERARCHIES (""UDSA_COUNTIES"" AS ""COUNTIES"" DEFAULT),
       ""UDSA_AGE_AD"" AS ""UDSA_AGE_AD""
         KEY (""AGE_CODE"")
@@ -903,8 +909,8 @@
         CLASSIFICATION ""DESCRIPTION"" VALUE 'Population share of state or total',
       ""POP_CHG_YA"" AS (
         LAG_DIFF(POPULATION) OVER (HIERARCHY year OFFSET 1))
-        CLASSIFICATION ""CAPTION"" VALUE 'Population Change Year Ago'
-        CLASSIFICATION ""DESCRIPTION"" VALUE 'Population Change Year Ago',
+        CLASSIFICATION ""CAPTION"" VALUE 'Population Change from Previous Available Year'
+        CLASSIFICATION ""DESCRIPTION"" VALUE 'Population change from the previous available year',
       ""POP_SHARE_AGE"" AS (
         SHARE_OF(population HIERARCHY age MEMBER ALL))
         CLASSIFICATION ""CAPTION"" VALUE 'Population Share of Age'
@@ -919,9 +925,9 @@
         CLASSIFICATION ""CAPTION"" VALUE 'Population'
         CLASSIFICATION ""DESCRIPTION"" VALUE 'Population',
       ""POP_PCT_CHG_YA"" AS (
-        LAG(POPULATION) OVER (HIERARCHY year OFFSET 1))
-        CLASSIFICATION ""CAPTION"" VALUE 'Population % Change Year Ago'
-        CLASSIFICATION ""DESCRIPTION"" VALUE 'Population Percent Change Year Ago')
+        100 * LAG_DIFF_PERCENT(POPULATION) OVER (HIERARCHY year OFFSET 1))
+        CLASSIFICATION ""CAPTION"" VALUE 'Population % Change from Previous Available Year'
+        CLASSIFICATION ""DESCRIPTION"" VALUE 'Population percent change from the previous available year')
     DEFAULT MEASURE ""POP_SHARE_SEX""
     DEFAULT AGGREGATE BY SUM
     CACHE USING ENFORCED CONSTRAINTS"

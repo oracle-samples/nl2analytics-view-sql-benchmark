@@ -7,6 +7,8 @@ benchmark dataset](../data/questions/tasks_unit_test.jsonl). We have confirmed t
 is very similar with the complete dataset. The benchmark measures whether 
 each agent can produce executable Oracle Analytic View SQL and match the expected answer rows.
 
+> **Snapshot note:** The most recent agent results in this document were published at commit [`efd34ba`](https://github.com/yassirsalmi/nl2analytics-view-sql-benchmark/commit/efd34bad62e55b8ec67509794cf991726e522609). These values are completed historical runs against the benchmark as it existed at that time. Golden SQL queries, Analytic View definitions, and benchmark questions have changed since then, so the values should not be interpreted as current or partially updated results. Refreshed agent runs are a work in progress.
+
 The `AV skill and tools` setup is the exported [agent spec version](analytic_view_agent_spec.json). 
 It includes Analytic View-specific instructions plus the AV tools exposed by the packaged agent.
 
