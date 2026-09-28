@@ -714,7 +714,7 @@
         CLASSIFICATION ""CAPTION"" VALUE 'Avg Air Time Minutes'
         CLASSIFICATION ""DESCRIPTION""
           VALUE 'The average time between wheels up (takeoff) and wheel down (landing).'
-        CLASSIFICATION ""UNITS"" VALUE 'Hours',
+        CLASSIFICATION ""UNITS"" VALUE 'Minutes',
       ""SUM_AIR_TIME_HOURS"" FACT (
         ROUND((air_time_minutes/ 60),0))
         AGGREGATE BY SUM
